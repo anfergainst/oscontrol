@@ -1,0 +1,25 @@
+# Swift build output (contains absolute local paths)
+.build/
+.swiftpm/
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+
+# Test artifacts and reports (written under /tmp by default, but guard anyway)
+# docs/images/ holds reviewed README images and is the only place image files are committed.
+*.png
+*.jpg
+*.jpeg
+*.bmp
+!docs/images/*.png
+state*.json
+report.json
+
+# Local secrets and editor/OS files
+.env
+.env.*
+*.pem
+*.key
+.DS_Store
+.vscode/
+.idea/
