@@ -182,6 +182,8 @@ Coordinates are **global desktop points**, origin at the top-left of the main di
 
 ## Testing
 
+Continuous integration runs the permission-free checks in `tests/ci/check_protocol.py` on every push: the build, CLI error handling, and the MCP handshake and tool list. The full end-to-end suite below needs Accessibility and Screen Recording permissions and a logged-in desktop, so it runs on a developer's Mac, not on CI runners.
+
 The suite drives a deterministic test window through the public interfaces and checks what happened.
 
 ```bash
@@ -247,7 +249,7 @@ Three samples is a small sample, so run `oscontrol benchmark` on your own machin
 - Windows support, behind the same tool interface.
 - ScreenCaptureKit capture.
 - Faster long-text input through the clipboard, with the user's clipboard restored.
-- Continuous integration for the build (the full end-to-end suite needs a Mac with permissions granted, so it runs locally).
+- Broader permission-free CI checks as the protocol grows. The full end-to-end suite needs a Mac with permissions granted, so it runs locally.
 
 ---
 

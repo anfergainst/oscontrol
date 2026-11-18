@@ -6,6 +6,9 @@ All notable changes to oscontrol are recorded here, newest first. Format loosely
 
 ## [Unreleased]
 
+### Added
+- Continuous integration (`.github/workflows/ci.yml`): builds the release binary and runs the permission-free protocol checks in `tests/ci/check_protocol.py`. The end-to-end suite is not run in CI.
+
 ## [0.2.0] - 2026-11-18
 
 ### Added

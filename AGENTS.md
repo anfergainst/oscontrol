@@ -29,9 +29,11 @@ oscontrol/
 ├── README.md                         ← product page / user documentation
 ├── CHANGELOG.md                      ← every released change, newest first
 ├── Package.swift                     ← SwiftPM: products `oscontrol` and `oscontrol-fixture`
+├── .github/workflows/ci.yml          ← CI: build + tests/ci/check_protocol.py only
 ├── .gitignore
 ├── Sources/oscontrol/main.swift      ← THE product: CLI, MCP server, capture, input, benchmark
 ├── tests/
+│   ├── ci/check_protocol.py          ← permission-free checks (the only tests CI runs)
 │   ├── fixture/main.swift            ← test-only AppKit window with known UI elements + state recorder
 │   └── e2e/
 │       ├── run_e2e.py                ← end-to-end test runner (45 tests, Python 3 standard library only)
@@ -96,7 +98,11 @@ scripts/install.sh
 # Check permissions (must report all three true)
 .build/debug/oscontrol doctor
 
-# Full end-to-end suite: builds, then runs all 45 tests (≈ 2.5 minutes)
+# Permission-free checks (what CI runs; also safe on any Mac)
+swift build -c release --product oscontrol
+python3 tests/ci/check_protocol.py .build/release/oscontrol
+
+# Full end-to-end suite: builds, then runs all 45 tests (≈ 2.5 minutes). Needs permissions; run locally only.
 tests/e2e/run_e2e.sh
 
 # Subset, and listing
@@ -258,7 +264,7 @@ Whenever you change behavior, update every place that describes it. Use this che
 | ScreenCaptureKit capture | Idea | Successor to `CGDisplayCreateImage`. Needs re-measurement and permission testing. |
 | Clipboard-paste typing | Idea | Faster for long text. Must restore the user's clipboard. |
 | Live harness sessions | Partly done | Kiro CLI and Agy have not been exercised from an interactive session (see `docs/harnesses/`). |
-| CI | Not set up | GitHub-hosted macOS runners cannot grant Accessibility or Screen Recording, so the end-to-end suite cannot run there. A build-only job is possible. |
+| CI | Active, permission-free only | `.github/workflows/ci.yml` builds the release binary and runs `tests/ci/check_protocol.py` (21 checks: CLI errors, MCP handshake, tool list, error codes). It passed on a GitHub-hosted runner (Xcode 26.6, Swift 6.3.3). The end-to-end suite is **not** run in CI: hosted runners cannot grant Accessibility or Screen Recording. Run it locally. |
 
 ---
 
@@ -280,6 +286,7 @@ Whenever you change behavior, update every place that describes it. Use this che
 A change is done only when all of the following hold:
 
 - [ ] It builds: `swift build` (and `scripts/install.sh` if the binary changed).
+- [ ] `python3 tests/ci/check_protocol.py .build/release/oscontrol` passes (this is what CI runs).
 - [ ] The full suite passed three consecutive times: `tests/e2e/run_e2e.sh` (45/45).
 - [ ] New behavior has a test; the coverage table in `README.md` reflects it.
 - [ ] Every item in the §8 checklist for the kind of change is updated.
