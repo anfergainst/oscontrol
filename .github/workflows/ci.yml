@@ -1,0 +1,36 @@
+# Permission-free checks only.
+#
+# This workflow builds oscontrol and runs tests/ci/check_protocol.py. Those checks never click,
+# type, or capture the screen, so they need no Accessibility or Screen Recording permission and
+# run on a GitHub-hosted macOS runner.
+#
+# The end-to-end suite (tests/e2e) is deliberately NOT run here: it needs a logged-in desktop
+# session with permissions granted by a person. Run it locally with tests/e2e/run_e2e.sh.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-checks:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Build release binary
+        run: swift build -c release --product oscontrol
+
+      - name: Run permission-free checks
+        run: python3 tests/ci/check_protocol.py .build/release/oscontrol
